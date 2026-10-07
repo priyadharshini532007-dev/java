@@ -1,0 +1,701 @@
+/* =====================================================================
+   JAVA - ALL CODE FROM THE 3 PPTs IN ONE FILE
+   (Java Basics, Java Modifiers, Innerclass-Generics-Collections-FilesIO)
+   FILE NAME MUST BE: Main.java  (only ONE public class per file, name = file name)
+   COMPILE : javac Main.java
+   RUN     : java Main
+   ===================================================================== */
+
+// ---------------------------- IMPORTS --------------------------------
+import java.util.Scanner;        // keyboard input
+import java.util.Arrays;         // Arrays.toString(), Arrays.sort()
+import java.util.Random;         // rand.nextInt(50) + 1
+import java.lang.Math;           // Math.min / max / pow / PI
+import java.util.List;           // List interface
+import java.util.ArrayList;      // ArrayList class
+import java.util.Collections;    // Collections.sort()
+import java.io.File;             // file.exists(), isDirectory(), getName()
+import java.io.FileWriter;       // write characters to a file
+import java.io.FileReader;       // read characters from a file
+import java.io.BufferedReader;   // wraps FileReader, readLine()
+import java.io.IOException;      // checked exception for file I/O
+import java.time.LocalDate;      // date only
+import java.time.LocalTime;      // time only
+import java.time.LocalDateTime;  // date + time
+import java.time.ZonedDateTime;  // date + time + zone
+import java.time.ZoneId;         // ZoneId.of("Asia/Kolkata")
+
+/* =====================================================================
+   PACKAGES (separate folders, cannot be in one file)
+
+   your-project-folder/
+     myfirstpackage/Greeting.java
+     mysecondpackage/Main.java
+
+   // myfirstpackage/Greeting.java
+   package myfirstpackage;
+   public class Greeting {
+       public void sayHello(String name) {
+           System.out.println("Hello, " + name + " from myfirstpackage!");
+       }
+   }
+
+   // mysecondpackage/Main.java
+   package mysecondpackage;
+   import myfirstpackage.Greeting;
+   public class Main {
+       public static void main(String[] args) {
+           Greeting greeting = new Greeting();
+           greeting.sayHello("students");
+       }
+   }
+
+   javac myfirstpackage/Greeting.java mysecondpackage/Main.java
+   java mysecondpackage.Main
+   Output: Hello, students from myfirstpackage!
+
+   Without import -> fully qualified name:
+   java.util.ArrayList<String> list = new java.util.ArrayList<>();
+
+   ---------------------------------------------------------------------
+   DEFAULT (package-private) ACCESS
+   package com.example.a;
+   public class Alpha {
+       int data = 10;
+       void display() { System.out.println("Data: " + data); }
+   }
+   Same package (com.example.a)      : obj.data, obj.display() -> Allowed
+   Different package (com.example.b) : import com.example.a.Alpha;
+       obj.data      -> COMPILE ERROR: data is not public
+       obj.display() -> COMPILE ERROR: display() is not public
+   ===================================================================== */
+
+
+/* =====================================================================
+   1. GETTER / SETTER  +  CONSTRUCTOR  (Rectangle slides)
+   ===================================================================== */
+class Rect {
+    private double len;
+    private double brd;
+
+    public Rect() { }
+    public Rect(double l, double b) {            // constructor
+        len = l;
+        brd = b;
+    }
+    public double getLen() { return len; }       // getters
+    public double getBrd() { return brd; }
+    public void setLen(double len) { this.len = len; }   // setters
+    public void setBrd(double brd) { this.brd = brd; }
+    public double area() { return len * brd; }
+}
+
+
+/* =====================================================================
+   2. STATIC METHOD  -> MyClass.myMethod()
+   ===================================================================== */
+class MyClass {
+    public static void myMethod() {
+        System.out.println("Hello from MyClass!");
+    }
+}
+
+
+/* =====================================================================
+   3. JAVADOC COMMENTS  (javadoc FindAvg.java)
+   ===================================================================== */
+/**
+ * <h1>Find average of three numbers!</h1>
+ * @author  Pratik Agarwal
+ * @version 1.0
+ * @since   2017-02-18
+ */
+class FindAvg {
+    /**
+     * @param a first parameter
+     * @param b second parameter
+     * @param c third parameter
+     * @return int average of a, b and c
+     */
+    public int findAvg(int a, int b, int c) {
+        return (a + b + c) / 3;
+    }
+}
+
+
+/* =====================================================================
+   4. NO OPERATOR OVERLOADING / FRIEND FUNCTION -> add() method
+   ===================================================================== */
+class Complex {
+    private double re, im;
+    public Complex(double re, double im) { this.re = re; this.im = im; }
+    public Complex add(Complex o) {
+        return new Complex(this.re + o.re, this.im + o.im);
+    }
+    @Override
+    public String toString() { return re + " + " + im + "i"; }
+}
+
+
+/* =====================================================================
+   5. INHERITANCE  (Vehicle -> Motorcar)  only public inheritance in Java
+   ===================================================================== */
+class Vehicle {
+    private String color;
+    private int speed, seats, wheels;
+    public Vehicle(String c, int s, int n1, int n2) {
+        color = c; speed = s; seats = n1; wheels = n2;
+    }
+    public void display() {
+        System.out.println("Color: " + color);
+        System.out.println("Max Speed: " + speed);
+        System.out.println("Num Seats: " + seats);
+        System.out.println("Num Wheels: " + wheels);
+    }
+}
+
+class Motorcar extends Vehicle {
+    private int doors;
+    public Motorcar(String c, int s, int n1, int n2, int n3) {
+        super(c, s, n1, n2);
+        doors = n3;
+    }
+    @Override
+    public void display() {
+        super.display();
+        System.out.println("Number of Doors: " + doors);
+    }
+}
+
+
+/* =====================================================================
+   6. MODIFIERS
+      Access     : public (all) | private (same class) |
+                   protected (same class + subclasses) | default (same package)
+      Non-access : final (cannot change/override/inherit)
+                   static (belongs to class, not object)
+                   abstract (no body / class cannot create objects)
+      Top-level class: only public or default
+   ===================================================================== */
+abstract class Animal {
+    public abstract void makeSound();            // abstract method, no body
+    public void eat() {
+        System.out.println("This animal eats food.");
+    }
+}
+
+class Dog extends Animal {
+    @Override
+    public void makeSound() {
+        System.out.println("Dog barks");
+    }
+}
+
+// "Is this Correct?" -> NO
+class FinalTest {
+    final int x = 10;
+    final double PI = 3.14;
+    // myObj.x = 50;   -> error: cannot assign a value to final variable x
+    // myObj.PI = 25;  -> error: cannot assign a value to final variable PI
+    // 2 errors
+}
+
+
+/* =====================================================================
+   7. INTERFACES
+      methods -> public abstract ; fields -> public static final
+      interface cannot be instantiated
+      class implements interface | interface extends interface | class extends class
+   ===================================================================== */
+interface Area {
+    final static float pi = 3.14F;
+    float compute(float x, float y);
+}
+class RectArea implements Area {
+    public float compute(float x, float y) { return (x * y); }
+}
+class Circle implements Area {
+    public float compute(float x, float y) { return (pi * x * x); }
+}
+
+// ---- multiple interfaces ----
+interface Football { void play_football(); }
+interface Cricket  { void play_cricket(); }
+
+class Player implements Football, Cricket {
+    public void play_football() { System.out.println("I scored a goal"); }
+    public void play_cricket()  { System.out.println("I scored a century"); }
+    public void write_exam()    { System.out.println("I scored 99 out of 100 in maths"); }
+}
+
+// ---- hybrid: extends class + implements interface ----
+class Student {
+    int rollNumber;
+    void getNumber(int n) { rollNumber = n; }
+    void putNumber() { System.out.println("Roll No : " + rollNumber); }
+}
+class Test extends Student {
+    float part1, part2;
+    void getMarks(float m1, float m2) { part1 = m1; part2 = m2; }
+    void putMarks() {
+        System.out.println("Marks obtained ");
+        System.out.println("part 1 = " + part1);
+        System.out.println("Part2 = " + part2);
+    }
+}
+interface Sports {
+    float sportWt = 6.0F;
+    void putwt();
+}
+class Results extends Test implements Sports {
+    float total;
+    public void putwt() { System.out.println("Sports Wt = " + sportWt); }
+    void display() {
+        total = part1 + part2 + sportWt;
+        putNumber();
+        putMarks();
+        putwt();
+        System.out.println("Total score = " + total);
+    }
+}
+
+// ---- interface extends interface ----
+interface ParentInterface { void displayParent(); }
+interface ChildInterface extends ParentInterface { void displayChild(); }
+class Both implements ChildInterface {           // must implement BOTH
+    public void displayParent() { System.out.println("Parent method implementation"); }
+    public void displayChild()  { System.out.println("Child method implementation"); }
+}
+
+// ---- diamond (variables) ----
+interface A { int VAL_A = 10; void display(); }
+interface B extends A { int VAL_B = 20; void showB(); }
+interface C extends A { int VAL_C = 30; void showC(); }
+class D implements B, C {
+    public void display() { System.out.println("VAL_A = " + VAL_A); }
+    public void showB()   { System.out.println("VAL_B = " + VAL_B); }
+    public void showC()   { System.out.println("VAL_C = " + VAL_C); }
+}
+
+// ---- Java 8+: default and static methods ----
+interface Msg {
+    default void printMessage() { System.out.println("Hello from the interface!"); }
+    static void sayHi()        { System.out.println("Hi from the interface."); }
+}
+class MsgImpl implements Msg { }
+
+
+/* =====================================================================
+   8. INNER CLASSES
+      Types: 1. Non-static (member)  2. Static nested  3. Local  4. Anonymous
+   ===================================================================== */
+class DataStructure {
+    private int[] data = {1, 2, 3, 4, 5};
+
+    class Iterator {                             // non-static inner class
+        int index = 0;
+        boolean hasNext() { return index < data.length; }
+        int next() { return data[index++]; }     // direct access to private data
+    }
+    public Iterator getIterator() { return new Iterator(); }
+}
+
+class Outer {
+    private static String MESSAGE = "Static Message";
+    private String name = "Non-Static Name";
+
+    static class StaticNested {                  // static nested class
+        void display() {
+            System.out.println("Accessing Outer Static: " + MESSAGE);
+            // System.out.println(name);         // COMPILATION ERROR
+        }
+    }
+}
+
+
+/* =====================================================================
+   9. GENERICS  (class Box<T>, like C++ template <typename T>)
+   ===================================================================== */
+class Box<T> {
+    private T content;
+    public void setContent(T content) { this.content = content; }
+    public T getContent() { return content; }
+}
+
+
+/* =====================================================================
+   10. EXCEPTIONS  (handled vs unhandled)
+   ===================================================================== */
+class HandledDemo {
+    public static void method2() {
+        System.out.println("--- Inside method2 ---");
+        int a = 10;
+        int b = 0;
+        try {
+            int result = a / b;
+            System.out.println("Result: " + result);
+        } catch (ArithmeticException e) {
+            System.out.println("ERROR: Division by zero caught gracefully.");
+        }
+        System.out.println("method2 finished.");
+    }
+}
+
+class UnhandledDemo {
+    public static void method1() {
+        System.out.println("--- Inside method1 ---");
+        int a = 10;
+        int b = 0;
+        int result = a / b;                      // program terminates here
+        System.out.println("Result: " + result); // never runs
+        System.out.println("method1 finished.");
+    }
+}
+
+
+/* =====================================================================
+   HELPER CLASSES - no public class -> file can have any name
+   ===================================================================== */
+class DataHelper { }
+class MathHelper { }
+
+
+/* =====================================================================
+   MAIN CLASS
+   ===================================================================== */
+public class Main {
+
+    // ---- throw ----
+    public static void validateAge(int age) {
+        if (age < 18) {
+            throw new IllegalArgumentException("Age must be 18 or older.");
+        }
+        System.out.println("Age is valid.");
+    }
+
+    // ---- throws ----
+    public static void readFile() throws IOException {
+        FileReader file = new FileReader("test.txt");
+        file.close();
+    }
+
+    // ---- Scanner input ----
+    public static void readInput() {
+        Scanner input = new Scanner(System.in);
+        System.out.print("Enter an integer: ");
+        int integerValue = input.nextInt();
+        System.out.print("Enter a float: ");
+        float floatValue = input.nextFloat();
+        System.out.print("Enter a double: ");
+        double doubleValue = input.nextDouble();
+        System.out.print("Enter a string (one word): ");
+        String stringValue = input.next();
+        System.out.print("Enter a character: ");
+        char charValue = input.next().charAt(0);
+        System.out.println("\n--- Your Input ---");
+        System.out.println("Integer: " + integerValue);
+        System.out.println("Float: " + floatValue);
+        System.out.println("Double: " + doubleValue);
+        System.out.println("String: " + stringValue);
+        System.out.println("Character: " + charValue);
+        input.close();
+    }
+
+    public static void main(String[] args) {
+
+        // ---------- 1. HELLO WORLD ----------
+        System.out.println("===== 1. HELLO WORLD =====");
+        System.out.println("Hello, World");
+
+        // ---------- 2. DATA TYPES (retail bill declaration) ----------
+        // byte 1, short 2, int 4, long 8, float 4, double 8, char 2, boolean 1 byte
+        int invoice_num, product_id, quant;
+        double cost, discount, price;
+        boolean feedback;
+
+        // ---------- 3. DATA OPERATIONS (Num1=10, Num2=15, Num3=25, Num4=true) ----------
+        System.out.println("\n===== 3. DATA OPERATIONS =====");
+        int n1 = 10, n2 = 15, n3 = 25;
+        boolean n4 = true;
+        System.out.println((n1 + n2) - n3 / 5);            // 20
+        n1++;
+        System.out.println(n1);                            // 11
+        n1 = 10;
+        System.out.println(n3 >= n1 + n2);                 // true
+        System.out.println(n2 == n1);                      // false
+        System.out.println((n2 < n3) && (n1 > n3));        // false
+        System.out.println(!n4);                           // false
+
+        // ---------- 4. RETAIL SHOP (10% discount, 5% tax) ----------
+        System.out.println("\n===== 4. RETAIL SHOP =====");
+        int itema = 200, itemb = 75, itemc = 500;
+        double pr;
+        pr = ((itema * 2) + (itemb) + (itemc * 3));
+        pr = pr - (.1 * pr);
+        pr = pr + (0.05 * pr);
+        System.out.println(pr);                            // 1866.375
+
+        // ---------- 5. GETTER / SETTER / CONSTRUCTOR ----------
+        System.out.println("\n===== 5. GETTER / SETTER / CONSTRUCTOR =====");
+        Rect rect1 = new Rect();
+        rect1.setLen(10.5);
+        rect1.setBrd(5.2);
+        System.out.println("Rectangle Dimensions:");
+        System.out.println("Length: " + rect1.getLen());
+        System.out.println("Breadth: " + rect1.getBrd());
+        Rect rect2 = new Rect(10.5, 5.2);
+        System.out.println("Area: " + rect2.area());
+
+        // ---------- 6. STATIC METHOD / FINDAVG ----------
+        System.out.println("\n===== 6. STATIC METHOD / FINDAVG =====");
+        MyClass.myMethod();
+        FindAvg obj = new FindAvg();
+        int avg = obj.findAvg(10, 20, 30);
+        System.out.println("Average of 10, 20 and 30 is :" + avg);
+
+        // ---------- 7. COMPLEX NUMBER ADD ----------
+        System.out.println("\n===== 7. COMPLEX NUMBER =====");
+        Complex num1 = new Complex(3.0, 4.0);
+        Complex num2 = new Complex(1.0, 2.5);
+        Complex sum = num1.add(num2);
+        System.out.println("Sum is: " + sum);              // 4.0 + 6.5i
+
+        // ---------- 8. INHERITANCE ----------
+        System.out.println("\n===== 8. INHERITANCE =====");
+        Vehicle v = new Vehicle("Blue", 180, 2, 2);
+        Motorcar car = new Motorcar("Red", 200, 4, 4, 4);
+        v.display();
+        System.out.println();
+        car.display();
+
+        // ---------- 9. MODIFIERS (abstract, final) ----------
+        System.out.println("\n===== 9. MODIFIERS =====");
+        // Animal myAnimal = new Animal();   // compile-time error: abstract class
+        Dog myDog = new Dog();
+        myDog.makeSound();
+        myDog.eat();
+
+        final int MAX_SCORE = 100;
+        // MAX_SCORE = 150;                  // Compilation Error: final variable
+        System.out.println("Max Score: " + MAX_SCORE);
+
+        // ---------- 10. INTERFACES ----------
+        System.out.println("\n===== 10. INTERFACES =====");
+        RectArea rect = new RectArea();
+        Circle cir = new Circle();
+        Area area;                           // interface reference
+        // Area area = new Area();           // ERROR: interface cannot be instantiated (slide bug)
+        area = rect;
+        System.out.println("Area of Rectangle = " + area.compute(10, 20));
+        area = cir;
+        System.out.println("Area of Circle = " + area.compute(10, 0));
+
+        Player s = new Player();
+        s.play_football();
+        s.play_cricket();
+        s.write_exam();
+
+        Results student1 = new Results();
+        student1.getNumber(1234);
+        student1.getMarks(27.5F, 33.0F);
+        student1.display();
+
+        Both mc = new Both();
+        mc.displayParent();
+        mc.displayChild();
+
+        D dObj = new D();
+        dObj.display();
+        dObj.showB();
+        dObj.showC();
+        System.out.println("Direct access via A: " + A.VAL_A);
+
+        new MsgImpl().printMessage();        // default method
+        Msg.sayHi();                         // static method
+
+        // ---------- 11. INNER CLASSES ----------
+        System.out.println("\n===== 11. INNER CLASSES =====");
+        DataStructure ds = new DataStructure();
+        DataStructure.Iterator it = ds.getIterator();
+        System.out.println("Iterating through private data:");
+        while (it.hasNext()) {
+            System.out.print(it.next() + " ");
+        }
+        System.out.println();
+        Outer.StaticNested nestedObj = new Outer.StaticNested();   // no Outer object
+        nestedObj.display();
+
+        // ---------- 12. ARRAYS / RANDOM / MATH ----------
+        System.out.println("\n===== 12. ARRAYS / RANDOM / MATH =====");
+        int ARRAY_SIZE = 5;
+        int[] numbers = new int[ARRAY_SIZE];
+        Random rand = new Random();
+        for (int i = 0; i < numbers.length; i++) {
+            numbers[i] = rand.nextInt(50) + 1;
+        }
+        System.out.println("Generated Array: " + Arrays.toString(numbers));
+        System.out.println("-------------------------");
+        int min = numbers[0];
+        int max = numbers[0];
+        for (int num : numbers) {
+            min = Math.min(min, num);
+            max = Math.max(max, num);
+        }
+        System.out.println("Minimum number (using Math.min): " + min);
+        System.out.println("Maximum number (using Math.max): " + max);
+        double powerResult = Math.pow(min, 2);
+        System.out.println("Square of min number (using Math.pow): " + (int) powerResult);
+        System.out.println("-------------------------");
+        Arrays.sort(numbers);
+        System.out.println("Sorted Array (using Arrays.sort): " + Arrays.toString(numbers));
+        System.out.println("-------------------------");
+        double piValue = Math.PI;
+        System.out.println("Value of PI (primitive double): " + piValue);
+
+        // ---------- 13. WRAPPER CLASSES ----------
+        System.out.println("\n===== 13. WRAPPER CLASSES =====");
+        int primitiveInt = 100;
+        Integer wrappedInt = Integer.valueOf(primitiveInt);     // manual wrapping
+        System.out.println("Wrapped Integer: " + wrappedInt);
+        int primitiveValue = 200;
+        Integer autoBoxedInt = primitiveValue;                  // autoboxing
+        System.out.println("Autoboxed Integer: " + autoBoxedInt);
+        Double wrappedDouble = Double.valueOf(10.50);           // slide: new Double(10.50) (deprecated)
+        double primitiveDouble = wrappedDouble.doubleValue();   // unwrapping
+        System.out.println("Unwrapped Double: " + primitiveDouble);
+        Character wrappedChar = 'A';
+        char unboxedChar = wrappedChar;                         // unboxing
+        System.out.println("Unboxed Character: " + unboxedChar);
+        ArrayList<Integer> nums = new ArrayList<>();
+        nums.add(5);
+        nums.add(15);
+        int firstNum = nums.get(0);
+        System.out.println("First number from ArrayList: " + firstNum);
+
+        // ---------- 14. STRING vs STRINGBUILDER ----------
+        System.out.println("\n===== 14. STRING vs STRINGBUILDER =====");
+        System.out.println("--- Using String ---");
+        String myString = "Hello";
+        System.out.println("Original String: " + myString);
+        myString = myString + " World";                         // new object
+        System.out.println("After concatenation: " + myString);
+        System.out.println("\n--- Using StringBuilder ---");
+        StringBuilder myStringBuilder = new StringBuilder("Hello");
+        System.out.println("Original StringBuilder: " + myStringBuilder);
+        myStringBuilder.append(" World");                       // same object
+        System.out.println("After append: " + myStringBuilder);
+
+        // ---------- 15. DATE & TIME (java.time) ----------
+        System.out.println("\n===== 15. DATE & TIME =====");
+        LocalDate today = LocalDate.now();
+        LocalDate birthday = LocalDate.of(1995, 12, 25);
+        LocalDate futureDate = today.plusDays(15);
+        LocalDate lastMonth = today.minusMonths(1);
+        LocalTime t = LocalTime.of(10, 30);
+        LocalDateTime dt = LocalDateTime.of(2025, 10, 26, 10, 30);
+        ZonedDateTime z = ZonedDateTime.of(dt, ZoneId.of("Asia/Kolkata"));
+        System.out.println("birthday: " + birthday);
+        System.out.println("futureDate after today: " + futureDate.isAfter(today) + ", lastMonth before today: " + lastMonth.isBefore(today));
+        System.out.println(t + " | " + dt + " | " + z);
+
+        // ---------- 16. GENERICS ----------
+        System.out.println("\n===== 16. GENERICS =====");
+        Box<Integer> intBox = new Box<>();
+        intBox.setContent(121);
+        int value = intBox.getContent();
+        System.out.println("Integer Box Value: " + value);
+        Box<String> stringBox = new Box<>();
+        stringBox.setContent("Java Generics");
+        String text = stringBox.getContent();
+        System.out.println("String Box Value: " + text);
+
+        // ---------- 17. COLLECTIONS (List + ArrayList + Collections.sort) ----------
+        System.out.println("\n===== 17. COLLECTIONS =====");
+        List<String> fruits = new ArrayList<>();
+        fruits.add("Banana");
+        fruits.add("Apple");
+        fruits.add("Orange");
+        fruits.add("Grape");
+        System.out.println("Original List: " + fruits);
+        Collections.sort(fruits);
+        System.out.println("----------------------------------");
+        System.out.println("Sorted List: " + fruits);
+        System.out.println("----------------------------------");
+        System.out.println("Element at index 0: " + fruits.get(0));
+
+        // ---------- 18. FILE I/O ----------
+        System.out.println("\n===== 18. FILE I/O =====");
+        String fileName = "sample.txt";
+        try (FileWriter writer = new FileWriter(fileName)) {      // try-with-resources
+            writer.write("Hello, Java I/O!\n");
+            writer.write("This line is written by a FileWriter.");
+            System.out.println("Data successfully written to " + fileName);
+        } catch (IOException e) {
+            System.out.println("Write Error: " + e.getMessage());
+        }
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println("READ: " + line);
+            }
+        } catch (IOException e) {
+            System.out.println("Read Error: " + e.getMessage());
+        }
+        File file = new File(fileName);
+        System.out.println("\nFile exists check: " + file.exists());
+        System.out.println("Is directory: " + file.isDirectory());
+        System.out.println("File name: " + file.getName());
+
+        // ---------- 19. EXCEPTION HANDLING ----------
+        System.out.println("\n===== 19. EXCEPTIONS =====");
+        System.out.println("Program starts.");
+        HandledDemo.method2();
+        System.out.println("Program finishes successfully.");
+
+        // try - catch - catch(Exception) last
+        try {
+            int result = 10 / 0;
+        } catch (ArithmeticException e) {
+            System.out.println("Error: Cannot divide by zero.");
+        } catch (Exception e) {
+            System.out.println("An unknown error occurred.");
+        }
+
+        // finally
+        try (FileReader fr = new FileReader("file.txt")) {
+            System.out.println("File is open and being read...");
+        } catch (IOException e) {
+            System.out.println("File error: " + e.getMessage());
+        } finally {
+            System.out.println("Execution of try-catch block finished.");
+        }
+
+        // throws
+        try {
+            readFile();
+        } catch (IOException e) {
+            System.out.println("Caught the file reading error.");
+        }
+
+        // throw
+        try {
+            validateAge(15);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Caught Exception: " + e.getMessage());
+        }
+        System.out.println("Program continues normally...");
+
+        // unhandled -> AbruptTermination (wrapped only so the rest of this file runs)
+        System.out.println("Program starts.");
+        try {
+            UnhandledDemo.method1();
+            System.out.println("Program finishes successfully.");   // will NOT execute
+        } catch (ArithmeticException e) {
+            System.out.println("Without try-catch the program terminates here: " + e);
+        }
+
+        // ---------- 20. SCANNER INPUT (needs keyboard) ----------
+        System.out.println("\n===== 20. SCANNER INPUT =====");
+        readInput();
+    }
+}
